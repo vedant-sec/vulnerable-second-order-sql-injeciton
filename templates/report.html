@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Report</h2>
+
+<p><strong>Query executed (shown for lab/learning purposes only — a real app would never expose this):</strong></p>
+<pre>{{ query }}</pre>
+
+{% if error %}
+<div class="error"><strong>SQL Error:</strong> {{ error }}</div>
+<p>This is your signal — an error here (e.g. from an <code>ORDER BY N</code> payload) tells you the column count.</p>
+{% else %}
+<table>
+    <tr><th>Description</th><th>Amount</th><th>Date</th></tr>
+    {% for r in rows %}
+    <tr>
+        <td>{{ r[0] }}</td>
+        <td>{{ r[1] }}</td>
+        <td>{{ r[2] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+<p style="margin-top:20px; font-size:14px; color:#999;">
+Hint chain: sign up with a username payload → this endpoint builds
+<code>SELECT description, amount, date FROM expenses WHERE username = '&lt;your username&gt;'</code>
+by string concatenation → break out of the quote, ORDER BY to find column count,
+then UNION SELECT against <code>sqlite_master</code> to find table names, then
+UNION SELECT against the table you find to dump its contents.
+</p>
+{% endblock %}
